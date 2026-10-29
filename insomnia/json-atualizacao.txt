@@ -1,0 +1,9 @@
+PUT http://localhost:8080/pokemon/1   (troque 1 pelo codigo de um Pokemon cadastrado; Body -> JSON)
+
+{
+  "nome": "Ivysaur",
+  "altura": 1.0,
+  "peso": 13.0,
+  "categoria": "Semente",
+  "dataDaCaptura": "2026-03-10"
+}

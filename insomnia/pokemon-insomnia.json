@@ -1,0 +1,131 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_source": "insomnia.desktop.app:v10",
+  "resources": [
+    {
+      "_id": "wrk_pokedex",
+      "_type": "workspace",
+      "name": "API Pokemon",
+      "scope": "collection",
+      "description": "Pokedex - API Restful Spring (FIAP)"
+    },
+    {
+      "_id": "env_base",
+      "_type": "environment",
+      "parentId": "wrk_pokedex",
+      "name": "Base Environment",
+      "data": {
+        "base_url": "http://localhost:8080"
+      }
+    },
+    {
+      "_id": "env_local",
+      "_type": "environment",
+      "parentId": "env_base",
+      "name": "Local",
+      "data": {
+        "base_url": "http://localhost:8080"
+      }
+    },
+    {
+      "_id": "env_render",
+      "_type": "environment",
+      "parentId": "env_base",
+      "name": "Render (deploy)",
+      "data": {
+        "base_url": "https://SEU-SERVICO.onrender.com"
+      }
+    },
+    {
+      "_id": "req_0",
+      "_type": "request",
+      "parentId": "wrk_pokedex",
+      "name": "1 - findAll",
+      "method": "GET",
+      "url": "{{ _.base_url }}/pokemon",
+      "metaSortKey": 0,
+      "headers": [],
+      "body": {}
+    },
+    {
+      "_id": "req_1",
+      "_type": "request",
+      "parentId": "wrk_pokedex",
+      "name": "2 - findByCodigo",
+      "method": "GET",
+      "url": "{{ _.base_url }}/pokemon/1",
+      "metaSortKey": 1,
+      "headers": [],
+      "body": {}
+    },
+    {
+      "_id": "req_2",
+      "_type": "request",
+      "parentId": "wrk_pokedex",
+      "name": "3 - save",
+      "method": "POST",
+      "url": "{{ _.base_url }}/pokemon",
+      "metaSortKey": 2,
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"nome\": \"Pikachu\",\n  \"altura\": 0.4,\n  \"peso\": 6.0,\n  \"categoria\": \"Rato\",\n  \"dataDaCaptura\": \"2026-09-15\"\n}"
+      }
+    },
+    {
+      "_id": "req_3",
+      "_type": "request",
+      "parentId": "wrk_pokedex",
+      "name": "4 - save (invalido - Bean Validation)",
+      "method": "POST",
+      "url": "{{ _.base_url }}/pokemon",
+      "metaSortKey": 3,
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"nome\": \"\",\n  \"altura\": -1,\n  \"peso\": 0,\n  \"categoria\": \"Rato\",\n  \"dataDaCaptura\": \"2099-01-01\"\n}"
+      }
+    },
+    {
+      "_id": "req_4",
+      "_type": "request",
+      "parentId": "wrk_pokedex",
+      "name": "5 - update",
+      "method": "PUT",
+      "url": "{{ _.base_url }}/pokemon/1",
+      "metaSortKey": 4,
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"nome\": \"Ivysaur\",\n  \"altura\": 1.0,\n  \"peso\": 13.0,\n  \"categoria\": \"Semente\",\n  \"dataDaCaptura\": \"2026-03-10\"\n}"
+      }
+    },
+    {
+      "_id": "req_5",
+      "_type": "request",
+      "parentId": "wrk_pokedex",
+      "name": "6 - delete",
+      "method": "DELETE",
+      "url": "{{ _.base_url }}/pokemon/1",
+      "metaSortKey": 5,
+      "headers": [],
+      "body": {}
+    }
+  ]
+}

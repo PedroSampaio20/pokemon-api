@@ -1,0 +1,9 @@
+POST http://localhost:8080/pokemon   (mostra o Bean Validation recusando o JSON -> 400 Bad Request)
+
+{
+  "nome": "",
+  "altura": -1,
+  "peso": 0,
+  "categoria": "Rato",
+  "dataDaCaptura": "2099-01-01"
+}

@@ -1,0 +1,9 @@
+POST http://localhost:8080/pokemon   (Body -> JSON)
+
+{
+  "nome": "Pikachu",
+  "altura": 0.4,
+  "peso": 6.0,
+  "categoria": "Rato",
+  "dataDaCaptura": "2026-09-15"
+}

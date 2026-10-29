@@ -1,0 +1,190 @@
+<!doctype html>
+<!--
+  Front-end da Pokédex (aula 44: "crie um Front-End para consumir sua API").
+  HTML + JavaScript puro: basta abrir este arquivo no navegador (duplo clique).
+  Ele só consegue chamar a API por causa da classe CorsFilter do projeto Java.
+
+  Troque a URL abaixo pela do Render para usar a API publicada.
+-->
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <title>Pokédex</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    h1 { background: #ffcb05; padding: 10px; }
+    table { border-collapse: collapse; margin-top: 10px; }
+    th, td { border: 1px solid #000; padding: 5px; }
+    th { background: #ffcb05; }
+    input, button { margin: 3px 0; }
+  </style>
+</head>
+<body>
+
+<h1>Pokédex</h1>
+
+<p>
+  URL da API: <input id="url" size="40" value="http://localhost:8080/pokemon">
+  <button onclick="listar()">Listar todos</button>
+</p>
+
+<h2 id="titulo">Cadastrar Pokémon</h2>
+<input type="hidden" id="codigo">
+Nome: <input id="nome"><br>
+Altura (m): <input id="altura" type="number" step="0.01"><br>
+Peso (kg): <input id="peso" type="number" step="0.01"><br>
+Categoria: <input id="categoria"><br>
+Data da captura: <input id="dataDaCaptura" type="date"><br>
+<button onclick="salvar()">Salvar</button>
+<button onclick="limpar()">Limpar</button>
+
+<h2>Buscar por código</h2>
+Código: <input id="busca" type="number">
+<button onclick="buscar()">Buscar</button>
+
+<h2>Pokémons cadastrados</h2>
+<table>
+  <tr><th>Código</th><th>Nome</th><th>Altura</th><th>Peso</th><th>Categoria</th><th>Data da captura</th><th>Ações</th></tr>
+  <tbody id="tabela"></tbody>
+</table>
+
+<script>
+  // endereço da API digitado na tela (sem "/" no final, para não gerar "//" nas URLs)
+  function url() {
+    let endereco = document.getElementById("url").value.trim();
+    if (endereco.endsWith("/")) {
+      endereco = endereco.slice(0, -1);
+    }
+    return endereco;
+  }
+
+  function campo(id) {
+    return document.getElementById(id);
+  }
+
+  // GET /pokemon -> lista todos
+  async function listar() {
+    try {
+      const resposta = await fetch(url());
+      if (resposta.status == 200) {
+        mostrar(await resposta.json());
+      } else {
+        alert("Erro " + resposta.status + " ao listar. Confira se a API está conectada ao banco.");
+      }
+    } catch (e) {
+      alert("Não foi possível conectar na API.");
+    }
+  }
+
+  // GET /pokemon/{codigo} -> busca um
+  async function buscar() {
+    try {
+      const resposta = await fetch(url() + "/" + campo("busca").value);
+      if (resposta.status == 200) {
+        mostrar([await resposta.json()]);
+      } else {
+        alert(await resposta.text());
+      }
+    } catch (e) {
+      alert("Não foi possível conectar na API.");
+    }
+  }
+
+  // POST /pokemon (novo) ou PUT /pokemon/{codigo} (edição)
+  async function salvar() {
+    const pokemon = {
+      nome: campo("nome").value,
+      altura: campo("altura").value,
+      peso: campo("peso").value,
+      categoria: campo("categoria").value,
+      dataDaCaptura: campo("dataDaCaptura").value
+    };
+    let metodo = "POST";
+    let endereco = url();
+    if (campo("codigo").value != "") {
+      metodo = "PUT";
+      endereco = url() + "/" + campo("codigo").value;
+    }
+    try {
+      const resposta = await fetch(endereco, {
+        method: metodo,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(pokemon)
+      });
+      if (resposta.status == 201) {
+        alert("Pokémon salvo!");
+        limpar();
+        listar();
+      } else {
+        alert("Erro " + resposta.status + ": confira os dados (campos obrigatórios, sem valores negativos e sem data futura).");
+      }
+    } catch (e) {
+      alert("Não foi possível conectar na API.");
+    }
+  }
+
+  // DELETE /pokemon/{codigo}
+  async function apagar(codigo) {
+    try {
+      const resposta = await fetch(url() + "/" + codigo, { method: "DELETE" });
+      if (resposta.status != 204) {
+        alert(await resposta.text());
+      }
+      // se o Pokémon apagado era o que estava sendo editado, volta o formulário para "Cadastrar"
+      if (campo("codigo").value == codigo) {
+        limpar();
+      }
+      listar();
+    } catch (e) {
+      alert("Não foi possível conectar na API.");
+    }
+  }
+
+  // coloca os dados do Pokémon no formulário para editar
+  function editar(p) {
+    campo("codigo").value = p.codigo;
+    campo("nome").value = p.nome;
+    campo("altura").value = p.altura;
+    campo("peso").value = p.peso;
+    campo("categoria").value = p.categoria;
+    campo("dataDaCaptura").value = p.dataDaCaptura;
+    campo("titulo").innerText = "Editar Pokémon " + p.codigo;
+  }
+
+  function limpar() {
+    campo("codigo").value = "";
+    campo("nome").value = "";
+    campo("altura").value = "";
+    campo("peso").value = "";
+    campo("categoria").value = "";
+    campo("dataDaCaptura").value = "";
+    campo("titulo").innerText = "Cadastrar Pokémon";
+  }
+
+  // monta as linhas da tabela
+  function mostrar(lista) {
+    const tabela = campo("tabela");
+    tabela.innerHTML = "";
+    lista.forEach(function (p) {
+      const linha = tabela.insertRow();
+      linha.insertCell().innerText = p.codigo;
+      linha.insertCell().innerText = p.nome;
+      linha.insertCell().innerText = p.altura;
+      linha.insertCell().innerText = p.peso;
+      linha.insertCell().innerText = p.categoria;
+      linha.insertCell().innerText = p.dataDaCaptura;
+      const acoes = linha.insertCell();
+      const botaoEditar = document.createElement("button");
+      botaoEditar.innerText = "Editar";
+      botaoEditar.onclick = function () { editar(p); };
+      const botaoApagar = document.createElement("button");
+      botaoApagar.innerText = "Apagar";
+      botaoApagar.onclick = function () { apagar(p.codigo); };
+      acoes.append(botaoEditar, botaoApagar);
+    });
+  }
+
+  listar();
+</script>
+</body>
+</html>
