@@ -4,23 +4,11 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-/**
- * Fábrica de conexões com o banco de dados Oracle (aula 40).
- *
- * Segue os padrões de projeto Factory (centraliza a criação da conexão) e
- * Singleton (reaproveita uma única conexão enquanto ela estiver aberta).
- *
- * As credenciais NÃO ficam no código (aula 44): são lidas das variáveis de ambiente
- * DB_URL, DB_USER e DB_PASSWORD. Localmente elas são definidas no terminal/IntelliJ e,
- * no deploy, no painel "Environment" do Render.
- */
 public class ConnectionFactory {
-
     private static Connection connection;
 
     public static Connection getConnection() {
         try {
-            // se já existe uma conexão aberta, reaproveita (Singleton)
             if (connection != null && !connection.isClosed()) {
                 return connection;
             }

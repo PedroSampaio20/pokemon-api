@@ -8,16 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-/**
- * DAO (Data Access Object): única camada que conversa com o banco de dados.
- * Cada método monta um comando SQL, executa via JDBC (PreparedStatement) e
- * converte o resultado em objetos PokemonTO.
- *
- * Convenção das aulas: em caso de falha o método retorna null (ou false no delete).
- */
 public class PokemonDAO {
-
-    // GET /pokemon (aula 41): lista todos os Pokémons cadastrados
     public ArrayList<PokemonTO> findAll() {
         ArrayList<PokemonTO> pokemons = new ArrayList<PokemonTO>();
         String sql = "select * from ddd_pokemons order by codigo";
@@ -45,14 +36,14 @@ public class PokemonDAO {
         return pokemons;
     }
 
-    // GET /pokemon/{codigo} (aula 41): busca um Pokémon pela chave primária
     public PokemonTO findByCodigo(Long codigo) {
-        PokemonTO pokemon = new PokemonTO();
+        PokemonTO pokemon = null;
         String sql = "select * from ddd_pokemons where codigo = ?";
         try (PreparedStatement ps = ConnectionFactory.getConnection().prepareStatement(sql)) {
             ps.setLong(1, codigo);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
+                pokemon = new PokemonTO();
                 pokemon.setCodigo(rs.getLong("codigo"));
                 pokemon.setNome(rs.getString("nome"));
                 pokemon.setAltura(rs.getDouble("altura"));
@@ -70,8 +61,6 @@ public class PokemonDAO {
         return pokemon;
     }
 
-    // POST /pokemon (aula 40): cadastra um novo Pokémon.
-    // O código não é enviado: o banco gera sozinho (IDENTITY).
     public PokemonTO save(PokemonTO pokemon) {
         String sql = "insert into ddd_pokemons (nome, altura, peso, categoria, data_da_captura) values (?, ?, ?, ?, ?)";
         try (PreparedStatement ps = ConnectionFactory.getConnection().prepareStatement(sql)) {
@@ -93,7 +82,6 @@ public class PokemonDAO {
         return null;
     }
 
-    // PUT /pokemon/{codigo} (aula 43): atualiza um Pokémon existente
     public PokemonTO update(PokemonTO pokemon) {
         String sql = "update ddd_pokemons set nome=?, altura=?, peso=?, categoria=?, data_da_captura=? where codigo=?";
         try (PreparedStatement ps = ConnectionFactory.getConnection().prepareStatement(sql)) {
@@ -103,7 +91,6 @@ public class PokemonDAO {
             ps.setString(4, pokemon.getCategoria());
             ps.setDate(5, Date.valueOf(pokemon.getDataDaCaptura()));
             ps.setLong(6, pokemon.getCodigo());
-            // executeUpdate devolve quantas linhas foram alteradas: 0 = código não existe
             if (ps.executeUpdate() > 0) {
                 return pokemon;
             } else {
@@ -117,7 +104,6 @@ public class PokemonDAO {
         return null;
     }
 
-    // DELETE /pokemon/{codigo} (aula 42): apaga um Pokémon e retorna true/false
     public boolean delete(Long codigo) {
         String sql = "delete from ddd_pokemons where codigo = ?";
         try (PreparedStatement ps = ConnectionFactory.getConnection().prepareStatement(sql)) {

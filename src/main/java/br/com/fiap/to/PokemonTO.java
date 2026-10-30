@@ -9,16 +9,7 @@ import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
 
-/**
- * TO (Transfer Object): representa um Pokémon e é o objeto que "viaja" entre as camadas
- * (Resource -> BO -> DAO) e também entre a API e o cliente, convertido para/de JSON.
- *
- * As anotações do Bean Validation (aula 41) validam os dados recebidos no corpo da
- * requisição. Elas só entram em ação quando o Resource usa @Valid no parâmetro.
- */
 public class PokemonTO {
-
-    // chave primária: gerada automaticamente pelo banco (IDENTITY), por isso não é validada
     private Long codigo;
 
     @NotBlank(message = "O nome é obrigatório")
@@ -27,24 +18,22 @@ public class PokemonTO {
 
     @NotNull(message = "A altura é obrigatória")
     @PositiveOrZero(message = "A altura não pode ser negativa")
-    @Max(value = 999, message = "A altura deve ser no máximo 999 m")  // coluna ALTURA é NUMBER(5,2)
+    @Max(value = 999, message = "A altura deve ser no máximo 999 m")
     private Double altura;
 
     @NotNull(message = "O peso é obrigatório")
     @PositiveOrZero(message = "O peso não pode ser negativo")
-    @Max(value = 9999, message = "O peso deve ser no máximo 9999 kg")  // coluna PESO é NUMBER(6,2)
+    @Max(value = 9999, message = "O peso deve ser no máximo 9999 kg")
     private Double peso;
 
     @NotBlank(message = "A categoria é obrigatória")
     @Size(max = 100, message = "A categoria deve ter no máximo 100 caracteres")
     private String categoria;
 
-    // não é possível capturar um Pokémon no futuro: a data deve ser hoje ou no passado
     @NotNull(message = "A data da captura é obrigatória")
     @PastOrPresent(message = "A data da captura não pode ser uma data futura")
     private LocalDate dataDaCaptura;
 
-    // construtor vazio: usado pelo Spring (Jackson) para converter o JSON em objeto
     public PokemonTO() {
     }
 

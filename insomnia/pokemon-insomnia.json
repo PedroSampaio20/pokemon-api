@@ -34,7 +34,7 @@
       "parentId": "env_base",
       "name": "Render (deploy)",
       "data": {
-        "base_url": "https://SEU-SERVICO.onrender.com"
+        "base_url": "https://pokemon-api-qd2w.onrender.com"
       }
     },
     {

@@ -16,21 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 
-/**
- * Resource: a "porta de entrada" da API. Recebe as requisições HTTP, chama o BO
- * e devolve a resposta com o código de status adequado (ResponseEntity).
- *
- * Endpoints (todos em /pokemon):
- *   GET    /pokemon           -> lista todos              (200 OK)
- *   GET    /pokemon/{codigo}  -> busca um pelo código     (200 OK | 404 Not Found)
- *   POST   /pokemon           -> cadastra                 (201 Created | 400 Bad Request)
- *   PUT    /pokemon/{codigo}  -> atualiza                 (201 Created | 400 Bad Request)
- *   DELETE /pokemon/{codigo}  -> apaga                    (204 No Content | 404 Not Found)
- */
 @RestController
 @RequestMapping("/pokemon")
 public class PokemonResource {
-
     private PokemonBO pokemonBO = new PokemonBO();
 
     @GetMapping
@@ -39,7 +27,6 @@ public class PokemonResource {
         return ResponseEntity.status(HttpStatus.OK).body(resultado);
     }
 
-    // @PathVariable: pega o valor digitado na URI (ex.: /pokemon/3 -> codigo = 3)
     @GetMapping("/{codigo}")
     public ResponseEntity<?> findByCodigo(@PathVariable Long codigo) {
         PokemonTO pokemon = pokemonBO.findByCodigo(codigo);
@@ -50,8 +37,6 @@ public class PokemonResource {
         }
     }
 
-    // @RequestBody: o JSON do corpo vira um PokemonTO | @Valid: aplica as regras do Bean Validation.
-    // Se a validação falhar, o próprio Spring responde 400 Bad Request antes de entrar no método.
     @PostMapping
     public ResponseEntity<?> save(@RequestBody @Valid PokemonTO pokemon) {
         PokemonTO resultado = pokemonBO.save(pokemon);
@@ -64,7 +49,6 @@ public class PokemonResource {
 
     @PutMapping("/{codigo}")
     public ResponseEntity<?> update(@PathVariable Long codigo, @RequestBody @Valid PokemonTO pokemon) {
-        // o código que vale é o da URI, não o do JSON
         pokemon.setCodigo(codigo);
         PokemonTO resultado = pokemonBO.update(pokemon);
         if (resultado != null) {

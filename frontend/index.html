@@ -1,11 +1,4 @@
 <!doctype html>
-<!--
-  Front-end da Pokédex (aula 44: "crie um Front-End para consumir sua API").
-  HTML + JavaScript puro: basta abrir este arquivo no navegador (duplo clique).
-  Ele só consegue chamar a API por causa da classe CorsFilter do projeto Java.
-
-  Troque a URL abaixo pela do Render para usar a API publicada.
--->
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8">
@@ -49,7 +42,6 @@ Código: <input id="busca" type="number">
 </table>
 
 <script>
-  // endereço da API digitado na tela (sem "/" no final, para não gerar "//" nas URLs)
   function url() {
     let endereco = document.getElementById("url").value.trim();
     if (endereco.endsWith("/")) {
@@ -62,7 +54,6 @@ Código: <input id="busca" type="number">
     return document.getElementById(id);
   }
 
-  // GET /pokemon -> lista todos
   async function listar() {
     try {
       const resposta = await fetch(url());
@@ -76,8 +67,11 @@ Código: <input id="busca" type="number">
     }
   }
 
-  // GET /pokemon/{codigo} -> busca um
   async function buscar() {
+    if (campo("busca").value == "") {
+      alert("Digite um código para buscar.");
+      return;
+    }
     try {
       const resposta = await fetch(url() + "/" + campo("busca").value);
       if (resposta.status == 200) {
@@ -90,7 +84,6 @@ Código: <input id="busca" type="number">
     }
   }
 
-  // POST /pokemon (novo) ou PUT /pokemon/{codigo} (edição)
   async function salvar() {
     const pokemon = {
       nome: campo("nome").value,
@@ -123,14 +116,12 @@ Código: <input id="busca" type="number">
     }
   }
 
-  // DELETE /pokemon/{codigo}
   async function apagar(codigo) {
     try {
       const resposta = await fetch(url() + "/" + codigo, { method: "DELETE" });
       if (resposta.status != 204) {
         alert(await resposta.text());
       }
-      // se o Pokémon apagado era o que estava sendo editado, volta o formulário para "Cadastrar"
       if (campo("codigo").value == codigo) {
         limpar();
       }
@@ -140,7 +131,6 @@ Código: <input id="busca" type="number">
     }
   }
 
-  // coloca os dados do Pokémon no formulário para editar
   function editar(p) {
     campo("codigo").value = p.codigo;
     campo("nome").value = p.nome;
@@ -161,7 +151,6 @@ Código: <input id="busca" type="number">
     campo("titulo").innerText = "Cadastrar Pokémon";
   }
 
-  // monta as linhas da tabela
   function mostrar(lista) {
     const tabela = campo("tabela");
     tabela.innerHTML = "";
